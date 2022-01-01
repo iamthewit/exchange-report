@@ -1,14 +1,13 @@
 <?php
 
+namespace ExchangeReport\Application\Handler;
 
-namespace App\Handler;
-
-use App\Message\GenericMessage;
+use ExchangeReport\Application\Message\GenericMessage;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 /**
  * Class GenericMessageHandler
- * @package App\Handler
+ * @package ExchangeReport\Application\Handler
  */
 class GenericMessageHandler implements MessageHandlerInterface
 {

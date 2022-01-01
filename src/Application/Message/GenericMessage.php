@@ -1,11 +1,11 @@
 <?php
 
 
-namespace App\Message;
+namespace ExchangeReport\Application\Message;
 
 /**
  * Class GenericMessage
- * @package App\Message
+ * @package ExchangeReport\Application\Message
  */
 class GenericMessage
 {
@@ -22,5 +22,15 @@ class GenericMessage
     {
         $this->type    = $type;
         $this->payload = $payload;
+    }
+
+    public function type(): string
+    {
+        return $this->type;
+    }
+
+    public function payload(): array
+    {
+        return $this->payload;
     }
 }

@@ -1,19 +1,11 @@
 <?php
 
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+namespace ExchangeReport\Infrastructure\Normalizer;
 
-namespace App\Normalizer;
-
-use App\Message\GenericMessage;
+use ExchangeReport\Application\Message\GenericMessage;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizableInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectToPopulateTrait;
 use Symfony\Component\Serializer\SerializerAwareInterface;
@@ -22,7 +14,7 @@ use Symfony\Component\Serializer\SerializerAwareTrait;
 // TODO: double check and tidy up - this is a frankenstein class copied from
 // here: https://github.com/symfony/symfony/blob/6.0/src/Symfony/Component/Serializer/Normalizer/CustomNormalizer.php
 // and here: https://symfony.com/doc/current/serializer/custom_normalizer.html#creating-a-new-normalizer
-class CustomNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, CacheableSupportsMethodInterface
+class StockExchangeEventNormalizer implements NormalizerInterface, DenormalizerInterface, SerializerAwareInterface, CacheableSupportsMethodInterface
 {
     use ObjectToPopulateTrait;
     use SerializerAwareTrait;
@@ -65,18 +57,10 @@ class CustomNormalizer implements NormalizerInterface, DenormalizerInterface, Se
      */
     public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
     {
-        return
-            $type === 'StockExchange\StockExchange\Event\Exchange\ExchangeCreated' ||
-            $type === 'StockExchange\StockExchange\Event\Exchange\TraderAddedToExchange' ||
-            $type === 'StockExchange\StockExchange\Event\Exchange\ShareAddedToExchange' ||
-            $type === 'StockExchange\StockExchange\Event\Exchange\ShareAllocatedToTrader' ||
-            $type === 'StockExchange\StockExchange\Event\Exchange\ShareAddedToExchange' ||
-            $type === 'StockExchange\StockExchange\Event\Exchange\BidAddedToExchange' ||
-            $type === 'StockExchange\StockExchange\Event\Exchange\BidRemovedFromExchange' ||
-            $type === 'StockExchange\StockExchange\Event\Exchange\AskAddedToExchange' ||
-            $type === 'StockExchange\StockExchange\Event\Exchange\AskRemovedFromExchange' ||
-            $type === 'StockExchange\StockExchange\Event\Exchange\TradeExecuted'
-        ;
+        // strpos() returns a 0 integer if the string needle is found at position 0 in the stack
+        // it returns false if the string position is not found
+        // so we check if the result is an integer to prove that we found the string
+        return is_int(strpos($type, 'StockExchange\StockExchange\Event\Exchange'));
     }
 
     /**
