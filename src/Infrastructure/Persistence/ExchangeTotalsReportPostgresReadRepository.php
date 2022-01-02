@@ -1,9 +1,8 @@
 <?php
 
-
 namespace ExchangeReport\Infrastructure\Persistence;
 
-use ExchangeReport\ExchangeReport\Report;
+use ExchangeReport\ExchangeReport\TotalsReport;
 use PDO;
 use Ramsey\Uuid\UuidInterface;
 
@@ -11,7 +10,7 @@ use Ramsey\Uuid\UuidInterface;
  * Class ExchangeReportPostgresReadRepository
  * @package ExchangeReport\Infrastructure\Persistence
  */
-class ExchangeReportPostgresReadRepository implements \ExchangeReport\ExchangeReport\ExchangeReportReadRepositoryInterface
+class ExchangeTotalsReportPostgresReadRepository implements \ExchangeReport\ExchangeReport\ExchangeTotalsReportReadRepositoryInterface
 {
     private PDO $database;
 
@@ -22,10 +21,10 @@ class ExchangeReportPostgresReadRepository implements \ExchangeReport\ExchangeRe
         $this->database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
-    public function findById(UuidInterface $id): Report
+    public function findById(UuidInterface $id): TotalsReport
     {
         $sql = <<<SQL
-            SELECT * FROM reports
+            SELECT * FROM totals_report
             WHERE id = :id 
         SQL;
 
@@ -38,9 +37,11 @@ class ExchangeReportPostgresReadRepository implements \ExchangeReport\ExchangeRe
             throw new \Exception('ruh roh');
         }
 
-        return Report::restoreReportFromValues(
+        return TotalsReport::restoreReportFromValues(
             $id,
             $result['trades_executed'],
+            $result['traders_on_exchange'],
+            $result['shares_on_exchange']
         );
     }
 }

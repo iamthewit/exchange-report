@@ -32,7 +32,6 @@ class StockExchangeEventNormalizer implements NormalizerInterface, DenormalizerI
      */
     public function denormalize(mixed $data, string $type, string $format = null, array $context = []): mixed
     {
-        dump('denormalizing!');
         return new GenericMessage($type, $data);
     }
 

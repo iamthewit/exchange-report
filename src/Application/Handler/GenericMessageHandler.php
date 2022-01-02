@@ -3,9 +3,9 @@
 namespace ExchangeReport\Application\Handler;
 
 use ExchangeReport\Application\Message\GenericMessage;
-use ExchangeReport\ExchangeReport\ExchangeReportReadRepositoryInterface;
-use ExchangeReport\ExchangeReport\ExchangeReportWriteRepositoryInterface;
-use ExchangeReport\ExchangeReport\Report;
+use ExchangeReport\ExchangeReport\ExchangeTotalsReportReadRepositoryInterface;
+use ExchangeReport\ExchangeReport\ExchangeTotalsReportWriteRepositoryInterface;
+use ExchangeReport\ExchangeReport\TotalsReport;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
@@ -15,18 +15,18 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
  */
 class GenericMessageHandler implements MessageHandlerInterface
 {
-    private ExchangeReportReadRepositoryInterface $exchangeReportReadRepository;
-    private ExchangeReportWriteRepositoryInterface $exchangeReportWriteRepository;
+    private ExchangeTotalsReportReadRepositoryInterface  $exchangeReportReadRepository;
+    private ExchangeTotalsReportWriteRepositoryInterface $exchangeReportWriteRepository;
 
     /**
      * GenericMessageHandler constructor.
      *
-     * @param ExchangeReportReadRepositoryInterface  $exchangeReportReadRepository
-     * @param ExchangeReportWriteRepositoryInterface $exchangeReportWriteRepository
+     * @param ExchangeTotalsReportReadRepositoryInterface  $exchangeReportReadRepository
+     * @param ExchangeTotalsReportWriteRepositoryInterface $exchangeReportWriteRepository
      */
     public function __construct(
-        ExchangeReportReadRepositoryInterface $exchangeReportReadRepository,
-        ExchangeReportWriteRepositoryInterface $exchangeReportWriteRepository
+        ExchangeTotalsReportReadRepositoryInterface $exchangeReportReadRepository,
+        ExchangeTotalsReportWriteRepositoryInterface $exchangeReportWriteRepository
     ) {
         $this->exchangeReportWriteRepository = $exchangeReportWriteRepository;
         $this->exchangeReportReadRepository = $exchangeReportReadRepository;
@@ -43,13 +43,18 @@ class GenericMessageHandler implements MessageHandlerInterface
             $report->incrementTrades();
         }
 
+        if ($genericMessage->type() === 'StockExchange\StockExchange\Event\Exchange\TraderAddedToExchange') {
+            $report->incrementTraders();
+        }
+
+        if ($genericMessage->type() === 'StockExchange\StockExchange\Event\Exchange\ShareAddedToExchange') {
+            $report->incrementShares();
+        }
+
         // store the changes
         $this->exchangeReportWriteRepository->store($report);
 
         // TODO: update reports
-            // total trades executed
-            // total traders on exchange
-            // total shares on exchange
             // total shares by symbol (FOO, BAR, etc) on exchange
     }
 }

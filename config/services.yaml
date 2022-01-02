@@ -23,8 +23,8 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    ExchangeReport\Infrastructure\Persistence\ExchangeReportPostgresReadRepository:
+    ExchangeReport\Infrastructure\Persistence\ExchangeTotalsReportPostgresReadRepository:
         arguments: ['%exchange_report.database_dsn%']
 
-    ExchangeReport\Infrastructure\Persistence\ExchangeReportPostgresWriteRepository:
+    ExchangeReport\Infrastructure\Persistence\ExchangeTotalsReportPostgresWriteRepository:
         arguments: ['%exchange_report.database_dsn%']
