@@ -1,48 +1,24 @@
 # docker/php-fpm/Dockerfile
+FROM php:8.0-fpm-alpine
+RUN apk add --no-cache mysql-client msmtp perl wget procps shadow libzip libpng libjpeg-turbo libwebp freetype icu
 
-# orignially from: https://www.devpowerup.com/php-docker
+RUN apk add --no-cache --virtual build-essentials \
+    icu-dev icu-libs zlib-dev g++ make automake autoconf libzip-dev \
+    libpng-dev libwebp-dev libjpeg-turbo-dev freetype-dev && \
+    docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp && \
+    docker-php-ext-install gd && \
+    docker-php-ext-install mysqli && \
+    docker-php-ext-install pdo_mysql && \
+    docker-php-ext-install intl && \
+    docker-php-ext-install opcache && \
+    docker-php-ext-install exif && \
+    docker-php-ext-install zip
 
-FROM php:8-fpm
-
-# Get frequently used tools
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libicu-dev \
-    libzip-dev \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    locales \
-    zip \
-    unzip \
-    jpegoptim optipng pngquant gifsicle \
-    vim \
-    git \
-    curl \
-    wget \
-    zsh
-
-RUN docker-php-ext-configure zip
-
-RUN docker-php-ext-install \
-        bcmath \
-        mbstring \
-        pcntl \
-        intl \
-        zip \
-        opcache \
-        amqp
-
-# apcu for caching, xdebug for debugging and also phpunit coverage
-#RUN pecl install \
-#        apcu-${APCU_VERSION} \
-#        xdebug \
-#    && docker-php-ext-enable \
-#        apcu \
-#        xdebug
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache rabbitmq-c-dev && \
+    mkdir -p /usr/src/php/ext/amqp && \
+    curl -fsSL https://pecl.php.net/get/amqp | tar xvz -C "/usr/src/php/ext/amqp" --strip 1 && \
+    docker-php-ext-install amqp && \
+    apk del build-essentials && rm -rf /usr/src/php*
 
 # php-cs-fixer tool
 RUN wget https://cs.symfony.com/download/php-cs-fixer-v2.phar -O /usr/local/bin/php-cs-fixer
