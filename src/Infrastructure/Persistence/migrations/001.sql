@@ -3,11 +3,11 @@ create table totals_report
     id uuid not null constraint reports_pk primary key,
     trades_executed integer default 0 not null,
     traders_on_exchange integer default 0 not null,
-    share_on_exchange integer default 0 not null
+    shares_on_exchange integer default 0 not null
 );
 
 alter table totals_report
-    owner to postgres;
+    owner to current_user;
 
 create unique index reports_id_uindex
     on totals_report (id);
